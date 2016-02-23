@@ -25,8 +25,15 @@ app.use(express.static(__dirname + '/public'));
 
 app.get('/', 
 function(req, res) {
+  //if theyre not logged in, display the log-in page
+  //when they try to log-in, run the log-in function
   res.render('index');
 });
+
+// app.get('/signup',
+//   function(req, res) {
+//     res.render('signup');
+//   })
 
 app.get('/create', 
 function(req, res) {
@@ -74,12 +81,42 @@ function(req, res) {
   });
 });
 
+app.post('/signup',
+function(req, res) {
+  User.forge({
+    username: req.body.username,
+    password: req.body.password
+  })
+  .save()
+  .then(function (user) {
+  res.location('/').json({error: false, data: {username: user.get('username')}});
+  })
+  .catch(function (err) {
+    res.status(500).json({error: true, data: {message: err.message}});
+  }); 
+})
+
+app.post('/login',
+function(req, res) {
+  console.log('this is request inside login ', req.body);
+  var yes = util.isValidUser(req.body.username);
+  console.log(yes);
+  if (util.isValidUser(req.body.username)) {
+    console.log('we should be here');
+
+  } else {
+    console.log('we should NOT NOT NOT be here');
+    
+  }
+  res.location('/');
+})
+
 /************************************************************/
 // Write your dedicated authentication routes here
 // e.g. login, logout, etc.
 /************************************************************/
 
-
+//login function that logs someone in
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
