@@ -42,10 +42,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
     // delete user Phillip from db so it can be created later for the test
     db.knex('users')
@@ -53,13 +53,13 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
   });
-  xdescribe('Link creation:', function(){
+  describe('Link creation:', function(){
     var requestWithSession = request.defaults({jar: true});
     beforeEach(function(done){      // create a user that we can then log-in with
       new User({
@@ -178,7 +178,7 @@ describe('', function() {
           done();
         });
       });
-      it('Returns all of the links to display on the links page', function(done) {
+      xit('Returns all of the links to display on the links page', function(done) {
         var options = {
           'method': 'GET',
           'uri': 'http://127.0.0.1:4568/links'
@@ -195,21 +195,25 @@ describe('', function() {
 
   describe('Privileged Access:', function(){
     it('Redirects to login page if a user tries to access the main page and is not signed in', function(done) {
-      request('http://127.0.0.1:4568/', function(error, res, body) {
-      
-        expect(res.req.path).to.equal('/login');
+      var options = {
+        'method': 'GET',
+        'uri': 'http://127.0.0.1:4568/'
+        }
+      request(options, function(error, res, body) {
+        //console.log('this is the res ', Object.keys(res));
+        expect(res.headers.location).to.equal('/login');
         done();
       });
     });
     it('Redirects to login page if a user tries to create a link and is not signed in', function(done) {
       request('http://127.0.0.1:4568/create', function(error, res, body) {
-        expect(res.req.path).to.equal('/login');
+        expect(res.headers.location).to.equal('/login');
         done();
       });
     });
     it('Redirects to login page if a user tries to see all of the links and is not signed in', function(done) {
       request('http://127.0.0.1:4568/links', function(error, res, body) {
-        expect(res.req.path).to.equal('/login');
+        expect(res.headers.location).to.equal('/login');
         done();
       });
     });

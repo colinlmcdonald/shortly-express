@@ -2,7 +2,10 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
-
+//added cookieParser
+var cookieParser = require('cookie-parser');
+//added express session
+var session = require('express-session');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -20,16 +23,36 @@ app.use(partials());
 app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(__dirname + '/public'));
+//app.use(express.static(__dirname + '/public'));
 
+app.use(cookieParser());
+app.use(session({
+  saveUninitialized: false, 
+  resave: false,
+  secret: 'keyboard cat'}));
+
+// function restrict(req, res, next) {
+//   if (req.session.user) {
+//     next();
+//   } else {
+//     req.session.error = 'Access denied!';
+//     res.redirect('/login');
+//   }
+// }
 
 app.get('/', 
 function(req, res) {
+  if (req.session.user) {
+    res.render('index'); 
+  }else{
+    res.location('/login').end();
+    //res.redirect('login');
+  }
   //if theyre not logged in, display the log-in page
   //when they try to log-in, run the log-in function
-  res.render('index');
 });
 
+//signup
 // app.get('/signup',
 //   function(req, res) {
 //     res.render('signup');
@@ -37,14 +60,22 @@ function(req, res) {
 
 app.get('/create', 
 function(req, res) {
-  res.render('index');
+  if (req.session.user) {
+    res.render('index'); 
+  } else {  
+      res.location('/login').end();
+  }
 });
 
 app.get('/links', 
 function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.send(200, links.models);
-  });
+  if (req.session.user) {
+    Links.reset().fetch().then(function(links) {
+      res.send(200, links.models);
+    });
+  } else {  
+      res.location('/login').end();
+  }
 });
 
 app.post('/links', 
