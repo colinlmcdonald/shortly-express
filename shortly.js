@@ -98,18 +98,16 @@ function(req, res) {
 
 app.post('/login',
 function(req, res) {
-  console.log('this is request inside login ', req.body);
-  var yes = util.isValidUser(req.body.username);
-  console.log(yes);
-  if (util.isValidUser(req.body.username)) {
-    console.log('we should be here');
-
-  } else {
-    console.log('we should NOT NOT NOT be here');
-    
-  }
-  res.location('/');
-})
+  Users.fetch().then(function(){ 
+    util.isValidUser(req.body.username, function(result){
+      if (result===true) {
+        res.location('/').end();
+      } else {
+        res.location('/login').end();
+      }
+    })
+  });
+});
 
 /************************************************************/
 // Write your dedicated authentication routes here
