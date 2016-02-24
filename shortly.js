@@ -23,7 +23,7 @@ app.use(partials());
 app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
-//app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/public'));
 
 app.use(cookieParser());
 app.use(session({
@@ -45,13 +45,22 @@ function(req, res) {
   if (req.session.user) {
     res.render('index'); 
   }else{
-    res.location('/login').end();
-    //res.redirect('login');
+    //res.location('/login').end();
+    res.redirect('/login');
   }
   //if theyre not logged in, display the log-in page
   //when they try to log-in, run the log-in function
 });
 
+app.get('/login',
+function(req, res) {
+  res.render('login');
+})
+
+app.get('/signup',
+function(req, res) {
+  res.render('signup');
+})
 //signup
 // app.get('/signup',
 //   function(req, res) {
@@ -120,7 +129,7 @@ function(req, res) {
   })
   .save()
   .then(function (user) {
-  res.location('/').json({error: false, data: {username: user.get('username')}});
+  res.redirect('/').json({error: false, data: {username: user.get('username')}});
   })
   .catch(function (err) {
     res.status(500).json({error: true, data: {message: err.message}});
@@ -132,9 +141,10 @@ function(req, res) {
   Users.fetch().then(function(){ 
     util.isValidUser(req.body.username, function(result){
       if (result===true) {
-        res.location('/').end();
+        req.session.user = 'hi';
+        res.redirect('/');
       } else {
-        res.location('/login').end();
+        res.render('login');
       }
     })
   });
