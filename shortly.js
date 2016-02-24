@@ -129,6 +129,7 @@ function(req, res) {
   })
   .save()
   .then(function (user) {
+  req.session.user = 'hi';
   res.redirect('/').json({error: false, data: {username: user.get('username')}});
   })
   .catch(function (err) {
@@ -138,6 +139,9 @@ function(req, res) {
 
 app.post('/login',
 function(req, res) {
+  if (req.session.user) {
+    req.session.destroy();
+  }
   Users.fetch().then(function(){ 
     util.isValidUser(req.body.username, function(result){
       if (result===true) {
@@ -149,6 +153,18 @@ function(req, res) {
     })
   });
 });
+
+
+  
+  //end session info/clear session
+  //redirect/render login
+// })
+
+
+
+//make a logout button--put it on the ole index
+  //on click, delete the information from the session
+//when you create an account it should auto log you in
 
 /************************************************************/
 // Write your dedicated authentication routes here

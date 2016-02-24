@@ -3,9 +3,11 @@ Shortly.Router = Backbone.Router.extend({
     this.$el = options.el;
   },
 
+//added dis shiz
   routes: {
     '':       'index',
-    'create': 'create'
+    'create': 'create',
+    'logout': 'login'
   },
 
   swapView: function(view){

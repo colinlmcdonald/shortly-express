@@ -1,9 +1,10 @@
 window.Shortly = Backbone.View.extend({
   template: Templates['layout'],
-
+//added click event for logout
   events: {
     'click li a.index':  'renderIndexView',
-    'click li a.create': 'renderCreateView'
+    'click li a.create': 'renderCreateView',
+    'click li a.logout': 'renderLoginView'
   },
 
   initialize: function(){
@@ -29,6 +30,25 @@ window.Shortly = Backbone.View.extend({
   renderCreateView: function(e){
     e && e.preventDefault();
     this.router.navigate('/create', { trigger: true });
+  },
+
+  //added this one like a bosssss buddyyyyy
+  renderLoginView: function(e){
+    e && e.preventDefault();
+    window.location = '/login'; 
+  },
+
+  endSession: function() {
+   $.ajax("api/auth/logged_in", {
+     type: "GET",
+     dataType: "json",
+     success: function() {
+       return callback(true);
+     },
+     error: function() {
+       return callback(false);
+     }
+   });    
   },
 
   updateNav: function(routeName){
